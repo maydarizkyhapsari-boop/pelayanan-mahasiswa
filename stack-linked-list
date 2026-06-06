@@ -1,0 +1,214 @@
+# ============================================================
+# SISTEM PELAYANAN MAHASISWA
+# Struktur Data: Queue, Stack, Singly Linked List
+# UTS Struktur Data dan Algoritma - IF206
+# ============================================================
+
+# ============================================================
+# SINGLY LINKED LIST - untuk data mahasiswa
+# ============================================================
+class NodeMahasiswa:
+    def __init__(self, nim, nama):
+        self.nim = nim
+        self.nama = nama
+        self.next = None
+
+class LinkedListMahasiswa:
+    def __init__(self):
+        self.head = None
+
+    def tambah(self, nim, nama):
+        node_baru = NodeMahasiswa(nim, nama)
+        if self.head is None:
+            self.head = node_baru
+        else:
+            current = self.head
+            while current.next is not None:
+                current = current.next
+            current.next = node_baru
+        print(f"  ✅ Data mahasiswa {nama} (NIM: {nim}) berhasil ditambahkan.")
+
+    def tampilkan(self):
+        if self.head is None:
+            print("  [Belum ada data mahasiswa]")
+            return
+        print("  ===== DATA MAHASISWA =====")
+        current = self.head
+        i = 1
+        while current is not None:
+            print(f"  {i}. {current.nim} - {current.nama}")
+            current = current.next
+            i += 1
+
+    def cari(self, nama):
+        current = self.head
+        while current is not None:
+            if current.nama.lower() == nama.lower():
+                return current
+            current = current.next
+        return None
+
+    def ilustrasi(self):
+        """Menampilkan ilustrasi linked list"""
+        if self.head is None:
+            print("  NULL")
+            return
+        current = self.head
+        result = ""
+        while current is not None:
+            result += f"[{current.nama}]"
+            if current.next:
+                result += " → "
+            current = current.next
+        result += " → NULL"
+        print(f"  {result}")
+
+
+# ============================================================
+# QUEUE (FIFO) - untuk antrian mahasiswa
+# ============================================================
+class Queue:
+    def __init__(self):
+        self.data = []
+
+    def enqueue(self, nama):
+        self.data.append(nama)
+        print(f"  ✅ {nama} berhasil masuk antrian.")
+        self._tampilkan_antrian()
+
+    def dequeue(self):
+        if self.is_empty():
+            print("  ⚠️  Antrian kosong, tidak ada mahasiswa yang bisa dipanggil.")
+            return None
+        dipanggil = self.data.pop(0)
+        print(f"  📢 Memanggil : {dipanggil}")
+        return dipanggil
+
+    def tampilkan(self):
+        if self.is_empty():
+            print("  ===== DAFTAR ANTRIAN =====")
+            print("  [Antrian kosong]")
+            return
+        print("  ===== DAFTAR ANTRIAN =====")
+        for i, nama in enumerate(self.data, 1):
+            print(f"  {i}. {nama}")
+
+    def _tampilkan_antrian(self):
+        antrian_str = " | ".join(self.data) if self.data else "(kosong)"
+        print(f"  Antrian saat ini: {antrian_str}")
+
+    def is_empty(self):
+        return len(self.data) == 0
+
+    def size(self):
+        return len(self.data)
+
+
+# ============================================================
+# STACK (LIFO) - untuk riwayat pelayanan
+# ============================================================
+class Stack:
+    def __init__(self):
+        self.data = []
+
+    def push(self, nama):
+        self.data.append(nama)
+
+    def pop(self):
+        if self.is_empty():
+            return None
+        return self.data.pop()
+
+    def tampilkan(self):
+        if self.is_empty():
+            print("  ===== RIWAYAT PELAYANAN =====")
+            print("  [Belum ada riwayat pelayanan]")
+            return
+        print("  ===== RIWAYAT PELAYANAN =====")
+        # Tampilkan dari yang paling baru (LIFO)
+        for i, nama in enumerate(reversed(self.data), 1):
+            print(f"  {i}. {nama}")
+
+    def is_empty(self):
+        return len(self.data) == 0
+
+
+# ============================================================
+# SISTEM UTAMA
+# ============================================================
+def tampilkan_menu():
+    print("\n" + "="*42)
+    print("    SISTEM PELAYANAN MAHASISWA")
+    print("="*42)
+    print("  1. Tambah Antrian")
+    print("  2. Panggil Antrian")
+    print("  3. Tampilkan Antrian")
+    print("  4. Tambah Data Mahasiswa")
+    print("  5. Tampilkan Data Mahasiswa")
+    print("  6. Riwayat Pelayanan")
+    print("  7. Keluar")
+    print("="*42)
+
+def main():
+    antrian  = Queue()
+    riwayat  = Stack()
+    mahasiswa = LinkedListMahasiswa()
+
+    while True:
+        tampilkan_menu()
+        pilihan = input("  Pilih menu (1-7): ").strip()
+
+        # ---- 1. Tambah Antrian ----
+        if pilihan == "1":
+            print("\n  --- Tambah Antrian ---")
+            nama = input("  Masukkan nama mahasiswa: ").strip()
+            if nama:
+                antrian.enqueue(nama)
+            else:
+                print("  ⚠️  Nama tidak boleh kosong.")
+
+        # ---- 2. Panggil Antrian ----
+        elif pilihan == "2":
+            print("\n  --- Panggil Antrian ---")
+            dipanggil = antrian.dequeue()
+            if dipanggil:
+                riwayat.push(dipanggil)
+                print(f"  ✅ {dipanggil} telah selesai dilayani dan masuk riwayat.")
+
+        # ---- 3. Tampilkan Antrian ----
+        elif pilihan == "3":
+            print()
+            antrian.tampilkan()
+
+        # ---- 4. Tambah Data Mahasiswa ----
+        elif pilihan == "4":
+            print("\n  --- Tambah Data Mahasiswa ---")
+            nim  = input("  Masukkan NIM  : ").strip()
+            nama = input("  Masukkan Nama : ").strip()
+            if nim and nama:
+                mahasiswa.tambah(nim, nama)
+                print("  Ilustrasi Linked List:")
+                mahasiswa.ilustrasi()
+            else:
+                print("  ⚠️  NIM dan Nama tidak boleh kosong.")
+
+        # ---- 5. Tampilkan Data Mahasiswa ----
+        elif pilihan == "5":
+            print()
+            mahasiswa.tampilkan()
+
+        # ---- 6. Riwayat Pelayanan ----
+        elif pilihan == "6":
+            print()
+            riwayat.tampilkan()
+
+        # ---- 7. Keluar ----
+        elif pilihan == "7":
+            print("\n  👋 Terima kasih. Program selesai.\n")
+            break
+
+        else:
+            print("  ⚠️  Pilihan tidak valid. Masukkan angka 1-7.")
+
+if __name__ == "__main__":
+    main()
